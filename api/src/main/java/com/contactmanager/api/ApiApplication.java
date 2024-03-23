@@ -21,11 +21,11 @@ import io.swagger.v3.oas.annotations.servers.Server;
 @SpringBootApplication
 public class ApiApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args){
 		SpringApplication.run(ApiApplication.class, args);
 	}
    @Bean
    public HashMap<String,String> getMap(){
-	return new HashMap<String,String>();
+	   return new HashMap<String,String>();
    }
 }

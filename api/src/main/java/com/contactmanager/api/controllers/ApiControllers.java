@@ -135,8 +135,9 @@ public class ApiControllers {
          return this.User_service.getFile(fileName,path);
     }
     @GetMapping(path="downloadExcelSheet")
-    public ResponseEntity<Resource> downloadExcelSheet() throws Exception{
-        return this.User_service.getExcelSheet();
+    public ResponseEntity<Resource> downloadExcelSheet(
+        @RequestParam(value = "keyword",required = false) String keyword) throws Exception{
+        return this.User_service.getExcelSheet(keyword);
     }
     
 }

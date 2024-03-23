@@ -53,6 +53,8 @@ public class UserServiceImpl implements UserService{
     Map<String,String> message;
     @Autowired 
     FileService fileService;
+    @Autowired
+    RepoUtility repoUtil;
     public ResponseEntity<PageResponse> fetchAllUser(int PageNumber,int PageSize,String SortBy,String sortDir,String filter,String path){
     
         Sort sort=(sortDir.equalsIgnoreCase("asc"))?Sort.by(SortBy).ascending():Sort.by(SortBy).descending();
@@ -218,8 +220,9 @@ public class UserServiceImpl implements UserService{
          .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+file.getOriginalFileName()+"\"")
          .body(new ByteArrayResource(fileService.getImage(path, file.getGeneratedFileName())));
     }
-    public ResponseEntity<Resource> getExcelSheet() throws Exception{
-        List<User>users=this.User_repo.findAll();
+    public ResponseEntity<Resource> getExcelSheet(String keyword) throws Exception{
+       
+        List<User> users=this.repoUtil.SearchUser(keyword);
         String fileName="UserData.xlsx";
         ByteArrayInputStream actualData=fileService.getExcelData(users);
         InputStreamResource file=new InputStreamResource(actualData);
@@ -227,5 +230,6 @@ public class UserServiceImpl implements UserService{
         .header(HttpHeaders.CONTENT_DISPOSITION,  "attachment; filename=\""+fileName+"\"")
         .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
         .body(file);
+    
     } 
 }
