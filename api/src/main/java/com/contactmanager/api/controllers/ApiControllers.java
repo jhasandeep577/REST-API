@@ -141,8 +141,7 @@ public class ApiControllers {
     }
     @GetMapping(path="getUsersFromUserType")
     public ResponseEntity<List<UserDto>> getUsersFromUserType(
-        @RequestParam(value = "typeName",required = false,defaultValue = "user") String userTypeName
-    ){
+        @RequestParam(value = "typeName",required = false,defaultValue = "user") String userTypeName ){
         return this.User_service.getUsersFromUserType(userTypeName);
     }
 }

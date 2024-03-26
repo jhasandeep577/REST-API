@@ -1,8 +1,5 @@
 package com.contactmanager.api.exceptionhandler.customexceptions;
 
-
-
-
 public class ResourceNotFoundException extends RuntimeException{
     private int id;
     public ResourceNotFoundException(int id){
