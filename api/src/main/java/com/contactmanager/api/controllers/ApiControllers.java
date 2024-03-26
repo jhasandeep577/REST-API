@@ -139,5 +139,10 @@ public class ApiControllers {
         @RequestParam(value = "keyword",required = false) String keyword) throws Exception{
         return this.User_service.getExcelSheet(keyword);
     }
-    
+    @GetMapping(path="getUsersFromUserType")
+    public ResponseEntity<List<UserDto>> getUsersFromUserType(
+        @RequestParam(value = "typeName",required = false,defaultValue = "user") String userTypeName
+    ){
+        return this.User_service.getUsersFromUserType(userTypeName);
+    }
 }

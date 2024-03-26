@@ -36,6 +36,7 @@ import com.contactmanager.api.exceptionhandler.customexceptions.ResourceAlreadyE
 import com.contactmanager.api.exceptionhandler.customexceptions.ResourceNotFoundException;
 import com.contactmanager.api.models.User;
 import com.contactmanager.api.models.UserFile;
+import com.contactmanager.api.models.UserType;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -230,6 +231,18 @@ public class UserServiceImpl implements UserService{
         .header(HttpHeaders.CONTENT_DISPOSITION,  "attachment; filename=\""+fileName+"\"")
         .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
         .body(file);
-    
     } 
+    public ResponseEntity<List<UserDto>> getUsersFromUserType(String name){
+        List<UserType> Dbusers=this.userTypeRepo.findByUserTypeName(name);
+        List<UserDto> Users=new ArrayList<UserDto>();
+        Dbusers.stream().forEach((userType)->{
+            if(!(Users.contains(dtoUtility.toUserDto(userType.getUser()))))
+              Users.add(dtoUtility.toUserDto(userType.getUser()));
+        });
+        if(Users.isEmpty()){
+         throw new NoContentFoundException();
+        }else{
+            return ResponseEntity.ok().body(Users);
+        }
+    }
 }

@@ -23,4 +23,5 @@ public interface UserService {
     public UserFile uploadfile(MultipartFile file,String path);
     public ResponseEntity<Resource> getFile(String fileName,String path) throws IOException;
     public ResponseEntity<Resource> getExcelSheet(String keyword) throws Exception;
+    public ResponseEntity<List<UserDto>> getUsersFromUserType(String name);
 }

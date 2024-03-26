@@ -9,5 +9,6 @@ import com.contactmanager.api.models.UserType;
 
 @Repository
 public interface UserTypeRepo extends JpaRepository<UserType,Integer>{
+    public List<UserType> findByUserTypeNameLike(String userTypeName);
     public List<UserType> findByUserTypeName(String userTypeName);
 }
