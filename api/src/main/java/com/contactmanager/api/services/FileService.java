@@ -16,7 +16,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -85,7 +88,7 @@ public class FileService {
          int rowid=sheet.getLastRowNum();
          while(rowNumber<=rowid){
             Row row=sheet.getRow(rowNumber);
-            if(rowNumber==0||row==null){
+            if(rowNumber==0||row==null||rowNumber==1||rowNumber==2){
                 rowNumber++;
                 continue;
             }
@@ -137,6 +140,10 @@ public class FileService {
     public static String[] RowNames={
         "Name","Email","MobileNumber","Department_Name","Department_ID","UserType"
     };
+    public static String[] RowExample={
+        "john doe","example123@gmail.com","9372838234","Example","837382","example"
+    };
+
      public ByteArrayInputStream getExcelData(List<User> userList) throws Exception{
         // Creating Excel Sheet
         Workbook workbook= new XSSFWorkbook();
@@ -144,20 +151,47 @@ public class FileService {
         try{
           // Creating a Sheet
           Sheet sheet=workbook.createSheet("Users");
+          // Creating font for desired color
+          Font fontRed=workbook.createFont();
+          fontRed.setColor(IndexedColors.RED.getIndex());
+          fontRed.setBold(true);
+          CellStyle styleRed=workbook.createCellStyle();
+          styleRed.setFont(fontRed);
+          // Creating another font for Opacity
+          Font OpacityBlack=workbook.createFont();
+          OpacityBlack.setColor(IndexedColors.BLACK.getIndex());
+          OpacityBlack.setItalic(true);
+          OpacityBlack.setBold(true);
+          CellStyle styleOpacity=workbook.createCellStyle();
+          styleOpacity.setFont(OpacityBlack);
+
           Row row=sheet.createRow(0);
-          for(int i=0;i<RowNames.length;i++){
-            Cell cell=row.createCell(i);
-            cell.setCellValue(RowNames[i]);
+           for(int i=0;i<RowNames.length;i++){
+              Cell cell=row.createCell(i);
+              cell.setCellValue("Mandatory");
+              cell.setCellStyle(styleRed);   
           }
-          int RowIndex=1;
+          Row row2=sheet.createRow(1);
+           for(int i=0;i<RowNames.length;i++){
+              Cell cell=row2.createCell(i);
+              cell.setCellValue(RowExample[i]);
+              cell.setCellStyle(styleOpacity);
+          }
+          Row row3=sheet.createRow(2);
+          for(int i=0;i<RowNames.length;i++){
+              Cell cell=row3.createCell(i);
+              cell.setCellValue(RowNames[i]);
+              cell.setCellStyle(styleOpacity);
+          }
+          int RowIndex=3;
           for(User exceldata: userList){
             Row dataRow=sheet.createRow(RowIndex);
             RowIndex++;
-            dataRow.createCell(0).setCellValue(exceldata.getName());
-            dataRow.createCell(1).setCellValue(exceldata.getEmail());
-            dataRow.createCell(2).setCellValue(exceldata.getMobile());
-            dataRow.createCell(3).setCellValue(exceldata.getDepartment().getDepartmentName());
-            dataRow.createCell(4).setCellValue(exceldata.getDepartment().getDepartmentCode());
+             dataRow.createCell(0).setCellValue(exceldata.getName());
+             dataRow.createCell(1).setCellValue(exceldata.getEmail());
+             dataRow.createCell(2).setCellValue(exceldata.getMobile());
+             dataRow.createCell(3).setCellValue(exceldata.getDepartment().getDepartmentName());
+             dataRow.createCell(4).setCellValue(exceldata.getDepartment().getDepartmentCode());
            
            StringBuffer usertypeString=new StringBuffer("");
            exceldata.getUsertypes().stream().forEach((userType)->{

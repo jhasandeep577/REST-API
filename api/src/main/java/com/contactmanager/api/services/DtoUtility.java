@@ -92,7 +92,8 @@ public class DtoUtility {
            dto.setFileUrl(toUrl(user.getImage()));
         }
         if(user.getDepartment()!=null){
-        dto.setDepartment(this.tDepartmentDto(user.getDepartment()));}
+        dto.setDepartment(this.tDepartmentDto(user.getDepartment()));
+        }
         if(user.getUsertypes()!=null){
         Set<UserTypeResDto> usertypedto=user.getUsertypes().stream().map((usertype)->{
            UserTypeResDto dtousertype=this.toUserTypeDto(usertype);

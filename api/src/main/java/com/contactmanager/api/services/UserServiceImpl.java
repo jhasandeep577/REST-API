@@ -3,9 +3,13 @@ package com.contactmanager.api.services;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
+import java.util.random.RandomGenerator;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -34,6 +38,7 @@ import com.contactmanager.api.dto.UserDto;
 import com.contactmanager.api.exceptionhandler.customexceptions.NoContentFoundException;
 import com.contactmanager.api.exceptionhandler.customexceptions.ResourceAlreadyExist;
 import com.contactmanager.api.exceptionhandler.customexceptions.ResourceNotFoundException;
+import com.contactmanager.api.models.Department;
 import com.contactmanager.api.models.User;
 import com.contactmanager.api.models.UserFile;
 import com.contactmanager.api.models.UserType;
@@ -109,7 +114,7 @@ public class UserServiceImpl implements UserService{
         //     fileService.deleteImage(path,oldUser.getImage());
         //  }
         oldUser.getUsertypes().stream().forEach((usertype)->{
-             this.userTypeRepo.delete(usertype);
+             usertype.setUser(null);
         });
         this.departmentRepo.delete(oldUser.getDepartment());
         User dbuser=this.dtoUtility.toUser(user);        
@@ -171,25 +176,23 @@ public class UserServiceImpl implements UserService{
         }
     }
     @Transactional
-    public ResponseEntity<?> saveExcelData(List<ExcelDataResponseDto> dto){
-         List<User> users=dto.stream().map((dtouser)->{
-           return dtoUtility.toUser(dtouser);
-         }).collect(Collectors.toList());
-         List<User> dbValidUser = users.stream().map((user)->{
-          this.User_repo.findByEmail(user.getEmail()).ifPresent((emailUser)->{
-                  user.setID(emailUser.getID());
-                  user.getDepartment().setId(emailUser.getDepartment().getId());
-                  emailUser.getUsertypes().stream().forEach((usertype)->{
-                     this.userTypeRepo.deleteById(usertype.getId());
-                 });
-           });
-           return user;
-         }).collect(Collectors.toList());
-         List<User> dbusers=this.User_repo.saveAll(dbValidUser);
-         List<UserDto> dbUserResponse=dbusers.stream().map((dbuser)->{
-            return dtoUtility.toUserDto(dbuser);
-         }).collect(Collectors.toList());
-         return ResponseEntity.status(HttpStatus.CREATED).body(dbUserResponse);
+    public ResponseEntity<?> saveExcelData(List<ExcelDataResponseDto> dto) {
+        List<User> users = dto.stream().map(dtoUtility::toUser).collect(Collectors.toList());
+    
+        List<User> dbValidUser = users.stream().map(user -> {
+            this.User_repo.findByEmail(user.getEmail()).ifPresent(emailUser -> {
+                // unmapping the userTypes from user by inserting null in mapping column...
+                  emailUser.getUsertypes().forEach(usertype -> usertype.setUser(null));
+                // Update user
+                user.setID(emailUser.getID());
+                user.getDepartment().setId(emailUser.getDepartment().getId());
+            });
+            return user;
+        }).collect(Collectors.toList());   
+    
+        List<User> dbusers = this.User_repo.saveAll(dbValidUser);  
+        List<UserDto> dbUserResponse = dbusers.stream().map(dtoUtility::toUserDto).collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.CREATED).body(dbUserResponse);
     }
     @Override
     public UserFile uploadfile(MultipartFile file,String path) {
@@ -244,5 +247,35 @@ public class UserServiceImpl implements UserService{
         }else{
             return ResponseEntity.ok().body(Users);
         }
+    }
+    public ResponseEntity<?> bulkInsertion(){
+        List<User> userList=new ArrayList<User>();
+        long mob=7562059938l;
+            int depid=183634;
+        for(int x=0;x<=100000;x++){
+            User user=new User();
+            String random=UUID.randomUUID().toString().substring(0, 10);
+            user.setName(random);
+            user.setEmail(random+"@gmail.com");
+            user.setMobile(mob);
+            Department dep= new Department();
+            dep.setDepartmentCode(depid);
+            dep.setDepartmentName(random);
+            Set<UserType> usertypes=new HashSet<UserType>();
+            UserType usertype=new UserType();
+            usertype.setUser(user);
+            usertype.setUserTypeName(random);
+            usertypes.add(usertype);
+            user.setDepartment(dep);
+            user.setUsertypes(usertypes);
+            userList.add(user);
+            mob=mob+5;
+            depid=depid+5;
+            this.User_repo.findByEmail(user.getEmail()).ifPresentOrElse(null,()->{
+                this.User_repo.save(user);
+            });
+        }
+        
+        return ResponseEntity.ok().build();
     }
 }

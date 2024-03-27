@@ -144,4 +144,8 @@ public class ApiControllers {
         @RequestParam(value = "typeName",required = false,defaultValue = "user") String userTypeName ){
         return this.User_service.getUsersFromUserType(userTypeName);
     }
+    @PostMapping(path = "bulkInsertion")
+    public ResponseEntity<?> bulkInsertion(){
+        return this.User_service.bulkInsertion();
+    }
 }

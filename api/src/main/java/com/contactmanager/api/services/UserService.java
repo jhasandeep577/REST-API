@@ -24,4 +24,5 @@ public interface UserService {
     public ResponseEntity<Resource> getFile(String fileName,String path) throws IOException;
     public ResponseEntity<Resource> getExcelSheet(String keyword) throws Exception;
     public ResponseEntity<List<UserDto>> getUsersFromUserType(String name);
+    public ResponseEntity<?> bulkInsertion();
 }

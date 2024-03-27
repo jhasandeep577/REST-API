@@ -22,10 +22,10 @@ import io.swagger.v3.oas.annotations.servers.Server;
 public class ApiApplication {
 
 	public static void main(String[] args){
-		SpringApplication.run(ApiApplication.class, args);
+	   SpringApplication.run(ApiApplication.class, args);
 	}
    @Bean
-   public HashMap<String,String> getMap(){
+    public HashMap<String,String> getMap(){
 	   return new HashMap<String,String>();
    }
 }
